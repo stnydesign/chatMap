@@ -1,4 +1,4 @@
-var milkcocoa = new MilkCocoa("xxx.mlkcca.com");
+var milkcocoa = new MilkCocoa("******.mlkcca.com");
 var locationDataStore = milkcocoa.dataStore("location");
 var chatDataStore = milkcocoa.dataStore("chat");
 var textArea, board, chatMessage;
@@ -33,7 +33,7 @@ window.onload = function(){
             console.log("geolocate not support");
           },
         });
-    },5000);//5秒ごとに位置情報送信
+    },10000);//10秒ごとに位置情報送信
 
     locationDataStore.on('send', function(data) {
         var lat = data.value.lat, lng = data.value.lng;
@@ -42,7 +42,7 @@ window.onload = function(){
           lat: lat,
           lng: lng,
           layer: 'overlayLayer',
-          content: '<div id="chatMessage" class="overlay"></div>',
+          content: '<div id="chatMessage"></div>',
           verticalAlign: 'top',
           horizontalAlign: 'center',
         });
@@ -52,9 +52,11 @@ window.onload = function(){
 
 function clickEvent(){
   var chatMessage = textArea.value;
+  var userId = $("#userId")[0].value;
   textArea.value = "";
   chatDataStore.push(
     { 
+      userId  : userId,
       message : chatMessage,
       date    : dateFormatYYYYMMDDHHNNSS(new Date())
     },
@@ -69,9 +71,31 @@ function clickEvent(){
 
 $(function() {
   chatDataStore.on("push", function(e) {
-    console.log(JSON.stringify(e));
-    console.log(e.value.message);
-    $('#chatMessage').text(e.value.message);
+    var user = e.value.userId;
+    if($('.'+user).text()){
+      //同一ユーザが既に投稿済みの文言を削除する
+      $('.'+user).remove();
+    }
+    var userMessage = $('<div class='
+      + user
+      + '>'
+      + '</div>').appendTo($("#chatMessage")).show();
+    userMessage.css({
+      // "width":"95%",
+      // "display":"block",
+      // "text-align":"center",
+      // "color":"#fff",
+      // "font-size":"16px",
+      // "line-height":"20px",
+      // "opacity":0.7,
+      // "background":"#4477aa",
+      // "border-radius":"4px",
+      // "box-shadow":"2px 2px 10px #333",
+      // "text-shadow":"1px 1px 1px #666",
+      // "padding":"0 4px",
+    })
+    $('.'+user).addClass("overlay");
+    $('.'+user).text(user+": "+e.value.message);
   });
 
   dateFormatYYYYMMDDHHNNSS = function(date){
