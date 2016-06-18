@@ -54,6 +54,9 @@ function clickEvent(){
   var chatMessage = textArea.value;
   var userId = $("#userId")[0].value;
   textArea.value = "";
+  if(chatMessage == "" || userId == ""){
+    return;
+  }
   chatDataStore.push(
     { 
       userId  : userId,
